@@ -1,40 +1,42 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  useColorScheme,
   View,
 } from 'react-native';
-import { Button, Stack } from 'native-base';
+import { Stack, Text } from 'native-base';
 import { useState, useEffect } from 'react';
 import NfcManager, { NfcEvents } from 'react-native-nfc-manager';
 
-function Home() {
+
+function ScanItemPage({ navigation }: {
+  navigation: any
+}) {
   const [hasNfc, setHasNFC] = useState<boolean|null>(null);
 
   useEffect(() => {
     const checkIsSupported = async () => {
       const deviceIsSupported = await NfcManager.isSupported()
       setHasNFC(deviceIsSupported)
-      if (deviceIsSupported) await NfcManager.start()
+      if (deviceIsSupported) {
+        await NfcManager.start();
+        await NfcManager.registerTagEvent();
+      }
     }
-    checkIsSupported()
+    checkIsSupported();
   }, []);
 
   useEffect(() => {
     NfcManager.setEventListener(NfcEvents.DiscoverTag, (tag: any) => {
       console.log(tag);
       console.log('tag found');
-    })
+    });
     return () => {
       NfcManager.setEventListener(NfcEvents.DiscoverTag, null);
+      NfcManager.unregisterTagEvent().catch(() => 0);
     }
   }, []);
-
-  const readTag = async () => {
-    await NfcManager.registerTagEvent();
-  }
 
   return (
     <SafeAreaView>
@@ -45,8 +47,7 @@ function Home() {
           alignItems: 'center'
         }}>
           <Stack>
-            <Button width="250" onPress={readTag} size="lg">Scan Item</Button>
-            <Button style={styles.writeBtn} width="250" onPress={readTag} size="lg">Write Item</Button>
+            <Text>Looking for Items...</Text>
           </Stack>
         </View>
       </ScrollView>
@@ -60,4 +61,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export { Home };
+export { ScanItemPage };
