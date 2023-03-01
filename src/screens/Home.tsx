@@ -38,10 +38,11 @@ function Home({ navigation }: {
 
 const styles = StyleSheet.create({
   bottomBtn: {
-    marginTop: 20
+    marginTop: 20,
   },
   scanBtn: {
-    marginTop: 50
+    marginTop: 50,
+    backgroundColor: '#FF9195'
   },
   illustration: {
     width: 360,

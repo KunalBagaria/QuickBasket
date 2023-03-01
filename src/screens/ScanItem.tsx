@@ -1,12 +1,12 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
-import { Stack, Text } from 'native-base';
 import { useState, useEffect } from 'react';
+import { Spinner, Stack, Text } from 'native-base';
 import NfcManager, { NfcEvents } from 'react-native-nfc-manager';
 
 
@@ -14,6 +14,7 @@ function ScanItemPage({ navigation }: {
   navigation: any
 }) {
   const [hasNfc, setHasNFC] = useState<boolean|null>(null);
+  const [scanned, setScanned] = useState<boolean>(true);
 
   useEffect(() => {
     const checkIsSupported = async () => {
@@ -31,6 +32,7 @@ function ScanItemPage({ navigation }: {
     NfcManager.setEventListener(NfcEvents.DiscoverTag, (tag: any) => {
       console.log(tag);
       console.log('tag found');
+      setScanned(false);
     });
     return () => {
       NfcManager.setEventListener(NfcEvents.DiscoverTag, null);
@@ -47,7 +49,12 @@ function ScanItemPage({ navigation }: {
           alignItems: 'center'
         }}>
           <Stack>
-            <Text>Looking for Items...</Text>
+            {scanned && (
+              <>
+                <Text>Looking for Items...</Text>
+                <Spinner size="lg" color="#FF9195" />
+              </>
+            )}
           </Stack>
         </View>
       </ScrollView>
@@ -55,10 +62,6 @@ function ScanItemPage({ navigation }: {
   );
 }
 
-const styles = StyleSheet.create({
-  writeBtn: {
-    marginTop: 20
-  }
-});
+const styles = StyleSheet.create({});
 
 export { ScanItemPage };
