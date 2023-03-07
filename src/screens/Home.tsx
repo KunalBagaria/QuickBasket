@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -6,15 +6,28 @@ import {
   View,
   Image
 } from 'react-native';
-import { Button, Stack } from 'native-base';
+import { Button, Stack, Text } from 'native-base';
+import { PublicKey } from '@solana/web3.js';
+import useAuthorization from '@/lib/useAuthorization';
+import ConnectButton from '@/components/ConnectWallet';
 
 function Home({ navigation }: {
   navigation: any
 }) {
+  const { accounts } = useAuthorization();
+  const [publicKey, setPublicKey] = useState<PublicKey|null>(null);
 
   const navigate = (path: string) => {
     navigation.navigate(path)
   }
+
+  useEffect(() => {
+    if (accounts && accounts.length > 0) {
+      setPublicKey(accounts[0].publicKey);
+    }
+  }, [accounts]);
+
+  console.log(accounts);
 
   return (
     <SafeAreaView>
@@ -26,9 +39,17 @@ function Home({ navigation }: {
         }}>
           <Stack>
             <Image style={styles.illustration} source={require('../images/home.png')} />
-            <Button width="360" size="lg" onPress={() => navigate('Scan')} style={styles.scanBtn}>Scan Item</Button>
-            <Button width="360" onPress={() => navigate('Write')} size="lg" style={styles.bottomBtn} >Write Item</Button>
-            <Button width="360" onPress={() => navigate('Cart')} size="lg" style={styles.bottomBtn}>Go To Cart</Button>
+            {!publicKey ? (
+              <ConnectButton size="lg" style={styles.connectBtn}>Connect Wallet</ConnectButton>
+            ) : (
+              <>
+                <Text>Connected to PublicKey {publicKey.toBase58()}</Text>
+                <Button width="360" onPress={() => navigate('Write')} size="lg" style={styles.bottomBtn} >Write Item</Button>
+                <Button width="360" size="lg" onPress={() => navigate('Scan')} style={styles.bottomBtn}>Scan Item</Button>
+                <Button width="360" onPress={() => navigate('Cart')} size="lg" style={styles.bottomBtn}>Go To Cart</Button>
+              </>
+            )}
+            {/* <Button width="360" onPress={() => navigate('Gum UI Components')} size="lg" style={styles.bottomBtn}>Test Page</Button> */}
           </Stack>
         </View>
       </ScrollView>
@@ -40,7 +61,7 @@ const styles = StyleSheet.create({
   bottomBtn: {
     marginTop: 20,
   },
-  scanBtn: {
+  connectBtn: {
     marginTop: 50,
     backgroundColor: '#FF9195'
   },
