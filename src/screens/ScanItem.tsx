@@ -1,20 +1,25 @@
+import axios from 'axios';
 import React from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
   View,
+  Image
 } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Spinner, Stack, Text } from 'native-base';
-import NfcManager, { NfcEvents } from 'react-native-nfc-manager';
+import { API_URL } from '@/lib/constants';
+import NfcManager, { NfcEvents, Ndef } from 'react-native-nfc-manager';
 
 
 function ScanItemPage({ navigation }: {
   navigation: any
 }) {
   const [hasNfc, setHasNFC] = useState<boolean|null>(null);
-  const [scanned, setScanned] = useState<boolean>(true);
+  const [tagID, setTagID] = useState<string|null>(null);
+  const [itemLoading, setItemLoading] = useState<boolean>(false);
+  const [item, setItem] = useState<any>(null);
 
   useEffect(() => {
     const checkIsSupported = async () => {
@@ -30,15 +35,33 @@ function ScanItemPage({ navigation }: {
 
   useEffect(() => {
     NfcManager.setEventListener(NfcEvents.DiscoverTag, (tag: any) => {
-      console.log(tag);
-      console.log('tag found');
-      setScanned(false);
+      const payload = tag.ndefMessage[0].payload;
+      const tagString = Ndef.text.decodePayload(payload);
+      console.log('tag found: ', tagString);
+      setTagID(tagString);
     });
     return () => {
       NfcManager.setEventListener(NfcEvents.DiscoverTag, null);
       NfcManager.unregisterTagEvent().catch(() => 0);
     }
   }, []);
+
+  useEffect(() => {
+    async function getItem() {
+      try {
+        const response = await axios.get(API_URL + '/product/' + tagID);
+        setItemLoading(false);
+        setItem(response.data);
+        console.log(response.data);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    if (tagID) {
+      setItemLoading(true);
+      getItem();
+    }
+  }, [tagID]);
 
   return (
     <SafeAreaView>
@@ -49,10 +72,23 @@ function ScanItemPage({ navigation }: {
           alignItems: 'center'
         }}>
           <Stack>
-            {scanned && (
+            {!tagID && (
               <>
                 <Text>Looking for Items...</Text>
                 <Spinner size="lg" color="#FF9195" />
+              </>
+            )}
+            {tagID && itemLoading && (
+              <>
+                <Text>Tag Found! Loading Details...</Text>
+                <Text>Item ID: {tagID}</Text>
+                <Spinner size="lg" color="#FF9195" />
+              </>
+            )}
+            {item && !itemLoading && (
+              <>
+                <Text>Item Found!</Text>
+                <Image source={{ uri: item.image }} style={{ width: 350, height: 350 }} />
               </>
             )}
           </Stack>

@@ -76,11 +76,19 @@ function WriteItemPage() {
             {image ? (
               <Text>Image uploaded ✅</Text>
             ) : (
-              <Button size="lg" onPress={() => {
-                handleLaunchCamera(setLocalImageURI, setImage)
-              }} style={styles.writeBtn}>Take a Photo</Button>
+              <>
+              {localImageURI ? (
+                <Text>Uploading image ⏳</Text>
+              ): (
+                <Button size="lg" onPress={() => {
+                  handleLaunchCamera(setLocalImageURI, setImage)
+                }} style={styles.writeBtn}>Take a Photo</Button>
+              )}
+              </>
             )}
-            <Button onPress={handleNetworkRequest} size="lg" style={styles.writeBtn}>Save Item</Button>
+            {image && name && description && price && (
+              <Button onPress={handleNetworkRequest} size="lg" style={styles.writeBtn}>Save Item</Button>
+            )}
           </>
         )}
         {tag && !tagWritten && (
