@@ -10,6 +10,7 @@ import { Button, Stack, Text } from 'native-base';
 import { PublicKey } from '@solana/web3.js';
 import useAuthorization from '@/lib/useAuthorization';
 import ConnectButton from '@/components/ConnectWallet';
+import { getTrimmedPublicKey } from '@/lib/utils';
 
 function Home({ navigation }: {
   navigation: any
@@ -30,7 +31,7 @@ function Home({ navigation }: {
   console.log(accounts);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.view}>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={{
           display: 'flex',
@@ -38,15 +39,17 @@ function Home({ navigation }: {
           alignItems: 'center'
         }}>
           <Stack>
-            <Image style={styles.illustration} source={require('../images/home.png')} />
             {!publicKey ? (
-              <ConnectButton size="lg" style={styles.connectBtn}>Connect Wallet</ConnectButton>
+              <>
+                {/* <Image style={styles.illustration} source={require('../images/home.png')} /> */}
+                <ConnectButton size="lg" style={styles.connectBtn}>Connect Wallet</ConnectButton>
+              </>
             ) : (
               <>
-                <Text>Connected to PublicKey {publicKey.toBase58()}</Text>
-                <Button width="360" onPress={() => navigate('Write')} size="lg" style={styles.bottomBtn} >Write Item</Button>
-                <Button width="360" size="lg" onPress={() => navigate('Scan')} style={styles.bottomBtn}>Scan Item</Button>
-                <Button width="360" onPress={() => navigate('Cart')} size="lg" style={styles.bottomBtn}>Go To Cart</Button>
+                <Text style={styles.connectedText}>Connected to Wallet: {getTrimmedPublicKey(publicKey)}</Text>
+                <Button width="377" onPress={() => navigate('Write')} size="lg" style={styles.bottomBtn} >Write Item</Button>
+                <Button width="377" size="lg" onPress={() => navigate('Scan')} style={styles.bottomBtn}>Scan Item</Button>
+                <Button width="377" onPress={() => navigate('Cart')} size="lg" style={styles.bottomBtn}>Go To Cart</Button>
               </>
             )}
             {/* <Button width="360" onPress={() => navigate('Gum UI Components')} size="lg" style={styles.bottomBtn}>Test Page</Button> */}
@@ -58,16 +61,32 @@ function Home({ navigation }: {
 }
 
 const styles = StyleSheet.create({
+  view: {
+    backgroundColor: "#FAAF40",
+    height: "100%"
+  },
   bottomBtn: {
     marginTop: 20,
+    borderRadius: 10,
+    height: 80,
+    backgroundColor: "#262261"
   },
   connectBtn: {
     marginTop: 50,
-    backgroundColor: '#FF9195'
+    borderRadius: 10,
+    height: 80,
+    width: 377,
+    backgroundColor: '#262261'
   },
   illustration: {
-    width: 360,
+    width: 377,
     height: 300
+  },
+  connectedText: {
+    fontSize: 20,
+    marginTop: 50,
+    marginBottom: 20,
+    fontWeight: 'bold'
   }
 });
 

@@ -8,7 +8,7 @@ import {
   Image
 } from 'react-native';
 import { useState, useEffect } from 'react';
-import { Spinner, Stack, Text } from 'native-base';
+import { Button, Spinner, Stack, Text } from 'native-base';
 import { API_URL } from '@/lib/constants';
 import NfcManager, { NfcEvents, Ndef } from 'react-native-nfc-manager';
 
@@ -88,7 +88,8 @@ function ScanItemPage({ navigation }: {
             {item && !itemLoading && (
               <>
                 <Text>Item Found!</Text>
-                <Image source={{ uri: item.image }} style={{ width: 350, height: 350 }} />
+                <Image source={{ uri: item.image }} style={{ width: 360, height: 360 }} />
+                <Button style={styles.bottomBtn} size="lg">Add to Cart</Button>
               </>
             )}
           </Stack>
@@ -98,6 +99,14 @@ function ScanItemPage({ navigation }: {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  bottomBtn: {
+    marginTop: 20,
+    borderRadius: 10,
+    height: 80,
+    width: 377,
+    backgroundColor: "#262261"
+  },
+});
 
 export { ScanItemPage };

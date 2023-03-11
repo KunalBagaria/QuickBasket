@@ -82,12 +82,12 @@ function WriteItemPage() {
               ): (
                 <Button size="lg" onPress={() => {
                   handleLaunchCamera(setLocalImageURI, setImage)
-                }} style={styles.writeBtn}>Take a Photo</Button>
+                }} style={styles.bottomBtn}>Take a Photo</Button>
               )}
               </>
             )}
             {image && name && description && price && (
-              <Button onPress={handleNetworkRequest} size="lg" style={styles.writeBtn}>Save Item</Button>
+              <Button onPress={handleNetworkRequest} size="lg" style={styles.bottomBtn}>Save Item</Button>
             )}
           </>
         )}
@@ -96,13 +96,13 @@ function WriteItemPage() {
             <Text>Item saved! 🎉</Text>
             <Text>Tag: {tag}</Text>
             <Text>Write this tag to the item you want to sell.</Text>
-            <Button onPress={handleTagWrite} size="lg" style={styles.writeBtn}>Write Tag</Button>
+            <Button onPress={handleTagWrite} size="lg" style={styles.bottomBtn}>Write Tag</Button>
           </>
         )}
         {tag && tagWritten && (
           <>
             <Text>Tag written! 🎉</Text>
-            <Button onPress={reloadScreen} size="lg" style={styles.writeBtn}>Write another Tag</Button>
+            <Button onPress={reloadScreen} size="lg" style={styles.bottomBtn}>Write another Tag</Button>
           </>
         )}
       </View>
@@ -118,9 +118,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 30
   },
-  writeBtn: {
-    width: "100%",
-  }
+  bottomBtn: {
+    marginTop: 20,
+    borderRadius: 10,
+    height: 80,
+    width: 377,
+    backgroundColor: "#262261"
+  },
 });
 
 export { WriteItemPage }
