@@ -8,6 +8,7 @@ import {
   Image
 } from 'react-native';
 import { useState, useEffect } from 'react';
+import { Loading } from './Loading';
 import { Button, Spinner, Stack, Text } from 'native-base';
 import { API_URL } from '@/lib/constants';
 import NfcManager, { NfcEvents, Ndef } from 'react-native-nfc-manager';
@@ -66,31 +67,28 @@ function ScanItemPage({ navigation }: {
   return (
     <SafeAreaView>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}>
+        <View style={styles.container}>
           <Stack>
             {!tagID && (
-              <>
-                <Text>Looking for Items...</Text>
-                <Spinner size="lg" color="#FF9195" />
-              </>
+              <View style={styles.loadingContainer}>
+                <Text style={styles.regularText}>Looking for Items</Text>
+                <Loading style={styles.spinner} />
+              </View>
             )}
             {tagID && itemLoading && (
-              <>
-                <Text>Tag Found! Loading Details...</Text>
-                <Text>Item ID: {tagID}</Text>
-                <Spinner size="lg" color="#FF9195" />
-              </>
+              <View style={styles.loadingContainer}>
+                <Text style={styles.regularText}>Loading Item</Text>
+                <Loading style={styles.spinner} />
+              </View>
             )}
             {item && !itemLoading && (
-              <>
-                <Text>Item Found!</Text>
-                <Image source={{ uri: item.image }} style={{ width: 360, height: 360 }} />
+              <View style={styles.itemDetails}>
+                <Image source={{ uri: item.image }} style={styles.itemImage} />
+                <Text style={styles.itemName}>{item.name}</Text>
+                <Text style={styles.description}>{item.description}</Text>
+                <Text style={styles.price}>${item.price}</Text>
                 <Button style={styles.bottomBtn} size="lg">Add to Cart</Button>
-              </>
+              </View>
             )}
           </Stack>
         </View>
@@ -100,13 +98,65 @@ function ScanItemPage({ navigation }: {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%'
+  },
+  loadingContainer: {
+    marginTop: 200,
+  },
+  regularText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#262261",
+  },
+  itemName: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "black",
+    marginTop: 30,
+    textAlign: "left",
+    width: 377
+  },
+  description: {
+    fontSize: 18,
+    marginTop: 10,
+    opacity: 0.5,
+    textAlign: "left",
+    width: 377
+  },
+  price: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#262261",
+    marginTop: 28,
+    textAlign: "left",
+    width: 377
+  },
   bottomBtn: {
-    marginTop: 20,
+    marginTop: 28,
     borderRadius: 10,
     height: 80,
     width: 377,
     backgroundColor: "#262261"
   },
+  spinner: {
+    marginTop: 20,
+  },
+  itemImage: {
+    width: 377,
+    height: 377,
+    marginTop: 20,
+    borderRadius: 10,
+  },
+  itemDetails: {
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'center',
+  }
 });
 
 export { ScanItemPage };
