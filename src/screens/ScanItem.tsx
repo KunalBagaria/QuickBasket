@@ -5,13 +5,18 @@ import {
   ScrollView,
   StyleSheet,
   View,
-  Image
+  Image,
 } from 'react-native';
+import NfcManager, {
+  NfcEvents,
+  Ndef
+} from 'react-native-nfc-manager';
 import { useState, useEffect } from 'react';
 import { Loading } from './Loading';
 import { Button, Spinner, Stack, Text } from 'native-base';
 import { API_URL } from '@/lib/constants';
-import NfcManager, { NfcEvents, Ndef } from 'react-native-nfc-manager';
+import { showToast } from '@/lib/utils';
+import { getCart, addItemToCart } from '@/lib/cart';
 
 
 function ScanItemPage({ navigation }: {
@@ -64,6 +69,13 @@ function ScanItemPage({ navigation }: {
     }
   }, [tagID]);
 
+  const handleAddToCart = async () => {
+    addItemToCart(item, item.store);
+    const cart = await getCart();
+    console.log('This is the store name', cart?.store.name);
+    showToast('Added to Cart! 🛒');
+  }
+
   return (
     <SafeAreaView>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
@@ -87,7 +99,7 @@ function ScanItemPage({ navigation }: {
                 <Text style={styles.itemName}>{item.name}</Text>
                 <Text style={styles.description}>{item.description}</Text>
                 <Text style={styles.price}>${item.price}</Text>
-                <Button style={styles.bottomBtn} size="lg">Add to Cart</Button>
+                <Button onPress={handleAddToCart} style={styles.bottomBtn} size="lg">Add to Cart</Button>
               </View>
             )}
           </Stack>
