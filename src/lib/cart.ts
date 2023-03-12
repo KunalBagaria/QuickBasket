@@ -56,4 +56,5 @@ async function cleanCart() {
   await AsyncStorage.removeItem('cart');
 }
 
+export type { Cart, Store, Product };
 export { getCart, addItemToCart, cleanCart };

@@ -16,7 +16,7 @@ import { Loading } from './Loading';
 import { Button, Spinner, Stack, Text } from 'native-base';
 import { API_URL } from '@/lib/constants';
 import { showToast } from '@/lib/utils';
-import { getCart, addItemToCart } from '@/lib/cart';
+import { addItemToCart } from '@/lib/cart';
 
 
 function ScanItemPage({ navigation }: {
@@ -70,10 +70,9 @@ function ScanItemPage({ navigation }: {
   }, [tagID]);
 
   const handleAddToCart = async () => {
-    addItemToCart(item, item.store);
-    const cart = await getCart();
-    console.log('This is the store name', cart?.store.name);
+    await addItemToCart(item, item.store);
     showToast('Added to Cart! 🛒');
+    navigation.navigate('Cart');
   }
 
   return (

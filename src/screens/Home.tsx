@@ -10,7 +10,8 @@ import useAuthorization from '@/lib/useAuthorization';
 import ConnectButton from '@/components/ConnectWallet';
 import { Button, Stack, Text } from 'native-base';
 import { PublicKey } from '@solana/web3.js';
-import { getTrimmedPublicKey } from '@/lib/utils';
+import { getTrimmedPublicKey, showToast } from '@/lib/utils';
+import { cleanCart } from '@/lib/cart';
 
 function Home({ navigation }: {
   navigation: any
@@ -28,7 +29,10 @@ function Home({ navigation }: {
     }
   }, [accounts]);
 
-  console.log(accounts);
+  const handleClearCart = async () => {
+    await cleanCart();
+    showToast('Cart Cleared');
+  }
 
   return (
     <SafeAreaView style={styles.view}>
@@ -50,6 +54,7 @@ function Home({ navigation }: {
                 <Button width="377" onPress={() => navigate('Write')} size="lg" style={styles.bottomBtn} >Write Item</Button>
                 <Button width="377" size="lg" onPress={() => navigate('Scan')} style={styles.bottomBtn}>Scan Item</Button>
                 <Button width="377" onPress={() => navigate('Cart')} size="lg" style={styles.bottomBtn}>Go To Cart</Button>
+                <Button width="377" onPress={handleClearCart} size="lg" style={styles.bottomBtn}>Clear Cart</Button>
               </>
             )}
           </Stack>
