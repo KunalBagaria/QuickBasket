@@ -43,7 +43,6 @@ function ScanItemPage({ navigation }: {
     NfcManager.setEventListener(NfcEvents.DiscoverTag, (tag: any) => {
       const payload = tag.ndefMessage[0].payload;
       const tagString = Ndef.text.decodePayload(payload);
-      console.log('tag found: ', tagString);
       setTagID(tagString);
     });
     return () => {
@@ -58,7 +57,6 @@ function ScanItemPage({ navigation }: {
         const response = await axios.get(API_URL + '/product/' + tagID);
         setItemLoading(false);
         setItem(response.data);
-        console.log(response.data);
       } catch (e) {
         console.log(e);
       }
