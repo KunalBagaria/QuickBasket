@@ -6,10 +6,10 @@ import {
   View,
   Image
 } from 'react-native';
-import { Button, Stack, Text } from 'native-base';
-import { PublicKey } from '@solana/web3.js';
 import useAuthorization from '@/lib/useAuthorization';
 import ConnectButton from '@/components/ConnectWallet';
+import { Button, Stack, Text } from 'native-base';
+import { PublicKey } from '@solana/web3.js';
 import { getTrimmedPublicKey } from '@/lib/utils';
 
 function Home({ navigation }: {
@@ -52,7 +52,6 @@ function Home({ navigation }: {
                 <Button width="377" onPress={() => navigate('Cart')} size="lg" style={styles.bottomBtn}>Go To Cart</Button>
               </>
             )}
-            {/* <Button width="360" onPress={() => navigate('Gum UI Components')} size="lg" style={styles.bottomBtn}>Test Page</Button> */}
           </Stack>
         </View>
       </ScrollView>
