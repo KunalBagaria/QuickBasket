@@ -62,7 +62,7 @@ function getPublicKeyFromAddress(address: Base64EncodedAddress): PublicKey {
 }
 
 export const APP_IDENTITY = {
-  name: 'React Native dApp',
+  name: 'QuickBasket',
 };
 
 export default function useAuthorization() {
@@ -89,7 +89,7 @@ export default function useAuthorization() {
             auth_token: authorization.authToken,
           })
         : wallet.authorize({
-            cluster: 'devnet',
+            cluster: 'mainnet-beta',
             identity: APP_IDENTITY,
           }));
       return (await handleAuthorizationResult(authorizationResult))

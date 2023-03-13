@@ -45,11 +45,12 @@ function Home({ navigation }: {
           <Stack>
             {!publicKey ? (
               <>
-                {/* <Image style={styles.illustration} source={require('../images/home.png')} /> */}
+                <Image style={styles.illustration} source={require('../images/logo.png')} />
                 <ConnectButton size="lg" style={styles.connectBtn}>Connect Wallet</ConnectButton>
               </>
             ) : (
               <>
+                <Image style={styles.smallIllustration} source={require('../images/logo.png')} />
                 <Text style={styles.connectedText}>Connected to Wallet: {getTrimmedPublicKey(publicKey)}</Text>
                 <Button width="377" onPress={() => navigate('Write')} size="lg" style={styles.bottomBtn} >Write Item</Button>
                 <Button width="377" size="lg" onPress={() => navigate('Scan')} style={styles.bottomBtn}>Scan Item</Button>
@@ -84,7 +85,11 @@ const styles = StyleSheet.create({
   },
   illustration: {
     width: 377,
-    height: 300
+    height: 377
+  },
+  smallIllustration: {
+    width: 200,
+    height: 200
   },
   connectedText: {
     fontSize: 20,

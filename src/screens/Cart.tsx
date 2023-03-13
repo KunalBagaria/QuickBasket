@@ -1,10 +1,20 @@
+import useAuthorization from '@/lib/useAuthorization';
+import useGuardedCallback from '@/lib/useGuardedCallback';
 import { View, Image, Text, SafeAreaView, ScrollView, StyleSheet } from "react-native";
-import { Cart, getCart } from "@/lib/cart";
+import { Cart, cleanCart, getCart } from "@/lib/cart";
 import { useEffect, useState } from "react";
 import { Loading } from "./Loading";
 import { Button } from "native-base";
+import { getConnection, getTransferSOLTransaction, getTransferTokenTransaction } from "@/lib/transaction";
+import { PublicKey } from '@solana/web3.js';
+import { transact } from '@solana-mobile/mobile-wallet-adapter-protocol-web3js';
+import { USDC_TOKEN } from '@/lib/constants';
+import { showToast } from '@/lib/utils';
 
-function CartPage() {
+function CartPage({ navigation }: {
+  navigation: any
+}) {
+  const {authorizeSession, selectedAccount} = useAuthorization();
   const [cart, setCart] = useState<Cart|null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [total, setTotal] = useState<number>(0);
@@ -19,6 +29,44 @@ function CartPage() {
     }
     getCartLocal();
   }, []);
+
+  const transferTokens = useGuardedCallback(
+    async (): Promise<string | null> => {
+      const signature = await transact(async (wallet) => {
+        setLoading(true);
+        const connection = getConnection();
+        const freshAccount = await authorizeSession(wallet);
+        const transaction = await getTransferTokenTransaction(
+          total,
+          freshAccount.publicKey,
+          // replace with store's public key
+          new PublicKey("8kgbAgt8oedfprQ9LWekUh6rbY264Nv75eunHPpkbYGX"),
+          USDC_TOKEN
+        );
+        if (!transaction) return null;
+        const signedTransaction = await wallet.signTransactions({
+          transactions: [transaction],
+        });
+        const signature = await connection.sendRawTransaction(signedTransaction[0].serialize());
+        return signature;
+      });
+      return signature || null;
+    },
+    [authorizeSession, selectedAccount],
+  );
+
+  const handleCheckout = async () => {
+    const signature = await transferTokens();
+    if (typeof signature === 'string') {
+      console.log('Signature: ', signature);
+      const confirmation = await getConnection().confirmTransaction(signature);
+      console.log('Confirmation: ', confirmation);
+      showToast('Payment Successful. Thank you for shopping with us!');
+      cleanCart();
+      navigation.navigate('Confirmation', { signature });
+      setLoading(false);
+    }
+  }
 
   return (
     <SafeAreaView>
@@ -39,7 +87,13 @@ function CartPage() {
                 </View>
               ))}
               <Text style={styles.total}>Total: ${total}</Text>
-              <Button style={styles.bottomBtn} size="lg">Checkout</Button>
+              <Button
+                onPress={handleCheckout}
+                style={styles.bottomBtn}
+                size="lg"
+              >
+                Pay with USDC
+              </Button>
             </View>
           )}
         </View>
