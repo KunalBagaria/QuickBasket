@@ -1,10 +1,11 @@
 import axios from 'axios';
-import { useState } from 'react';
-import { Button, Input, Text } from 'native-base';
+import NfcManager, { NfcTech, Ndef } from 'react-native-nfc-manager';
+import { useEffect, useState } from 'react';
+import { Button, Input, Spinner, Text } from 'native-base';
 import { View, StyleSheet } from 'react-native';
 import { handleLaunchCamera } from '@/lib/uploadImage';
 import { API_URL } from '@/lib/constants';
-import NfcManager, { NfcTech, Ndef } from 'react-native-nfc-manager';
+import { Loading } from './Loading';
 
 
 function WriteItemPage() {
@@ -15,6 +16,7 @@ function WriteItemPage() {
   const [price, setPrice] = useState<string | null>(null);
   const [tag, setTag] = useState<string | null>(null);
   const [tagWritten, setTagWritten] = useState<boolean>(false);
+  const [tagWritePressed, setTagWritePressed] = useState<boolean>(false);
 
   async function handleNetworkRequest() {
     if (image && name && description && price) {
@@ -78,7 +80,10 @@ function WriteItemPage() {
             ) : (
               <>
               {localImageURI ? (
-                <Text>Uploading image ⏳</Text>
+                <>
+                  <Spinner size="lg" color="#FAAF40" />
+                  <Text>Uploading image ⏳</Text>
+                </>
               ): (
                 <Button size="lg" onPress={() => {
                   handleLaunchCamera(setLocalImageURI, setImage)
@@ -93,17 +98,30 @@ function WriteItemPage() {
         )}
         {tag && !tagWritten && (
           <>
-            <Text>Item saved! 🎉</Text>
-            <Text>Tag: {tag}</Text>
-            <Text>Write this tag to the item you want to sell.</Text>
-            <Button onPress={handleTagWrite} size="lg" style={styles.bottomBtn}>Write Tag</Button>
+            {tagWritePressed ? (
+              <View style={styles.centerContainer}>
+                <Text style={styles.regularText}>Hold your phone closer to the tag</Text>
+                <Loading style={styles.spinner} />
+              </View>
+            ) : (
+              <Button onPress={() => {
+                setTagWritePressed(true);
+                handleTagWrite();
+              }} size="lg" style={{
+                ...styles.bottomBtn,
+                marginTop: 40
+              }}>Write Tag</Button>
+            )}
           </>
         )}
         {tag && tagWritten && (
-          <>
-            <Text>Tag written! 🎉</Text>
-            <Button onPress={reloadScreen} size="lg" style={styles.bottomBtn}>Write another Tag</Button>
-          </>
+          <View style={{ marginTop: 40 }}>
+            <Text style={styles.regularText}>Tag written! 🎉</Text>
+            <Button onPress={reloadScreen} size="lg" style={{
+              ...styles.bottomBtn,
+              marginTop: 30
+            }}>Write another Tag</Button>
+          </View>
         )}
       </View>
     </View>
@@ -119,11 +137,26 @@ const styles = StyleSheet.create({
     gap: 30
   },
   bottomBtn: {
-    marginTop: 20,
+    marginTop: 10,
     borderRadius: 10,
-    height: 80,
+    height: 50,
     width: 377,
     backgroundColor: "#262261"
+  },
+  centerContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 200
+  },
+  regularText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#262261",
+  },
+  spinner: {
+    marginTop: 20,
   },
 });
 
