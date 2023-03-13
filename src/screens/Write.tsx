@@ -6,6 +6,7 @@ import { View, StyleSheet } from 'react-native';
 import { handleLaunchCamera } from '@/lib/uploadImage';
 import { API_URL } from '@/lib/constants';
 import { Loading } from './Loading';
+import { showToast } from '@/lib/utils';
 
 
 function WriteItemPage() {
@@ -21,6 +22,7 @@ function WriteItemPage() {
   async function handleNetworkRequest() {
     if (image && name && description && price) {
       console.log('Sending network request...');
+      showToast('Saving Item...');
       try {
         const data = {
           name,
